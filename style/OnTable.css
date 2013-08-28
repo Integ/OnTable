@@ -1,0 +1,47 @@
+/* OnTable.css
+ * @Author Integ(7777js@gmail.com)
+ **/
+
+@import "demo_page.css";
+@import "demo_table.css";
+.popup_background {
+    z-index: 2000; /* any number */
+}
+.popup_wrapper {
+    z-index: 2001; /* any number + 1 */
+}
+#customCol {
+    float: right;
+    margin-top: -80px;
+    width: 200px;
+    overflow: hidden;
+    list-style: none;
+}
+#customCol li {
+    cursor: pointer;
+}
+#customCol li:hover {
+    background-color: #EFE;
+    cursor: pointer;
+}
+#customCol span {
+    float: right;
+    color: #999;
+    font-size: 12px;
+}
+body.dragging, body.dragging * {
+  cursor: move !important;
+}
+.dragged {
+  position: absolute;
+  opacity: 0.5;
+  z-index: 2000;
+}
+ul#customCol li.placeholder {
+  position: relative;
+  /** More li styles **/
+}
+ul#customCol li.placeholder:before {
+  position: absolute;
+  /** Define arrowhead **/
+}
