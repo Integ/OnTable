@@ -8,27 +8,21 @@ $(function(){
     var keyword = json.slice(0,1);
     keyword = keyword[0];
     var data = json.slice(1);
-    var aoColumns = [
-        { "sTitle": keyword[0]},
-        { "sTitle": keyword[1]},
-        { "sTitle": keyword[2]},
-        { "sTitle": keyword[3]},
-        { "sTitle": keyword[4]},
-        { "sTitle": keyword[5]},
-        { "sTitle": keyword[6]},
-        { "sTitle": keyword[7]},
-        { "sTitle": keyword[8]},
-        { "sTitle": keyword[9]},
-        { "sTitle": keyword[10]}
-    ];
+    var aoColumns = [];
+    $.each(keyword, function(i,e){
+        aoColumns[i] = {'sTitle': e};
+    });
     var myTable = {};
-    $('#makeTable').click(function(){
-        var myTable = $('#data').dataTable({
+    function drawTable(colOption){
+        myTable = $('#data').dataTable({
             "bDestroy": true,
             "bRetrieve": true,
             "aaData": data,
-            "aoColumns": aoColumns
+            "aoColumns": colOption
         });
+    }
+    $('#makeTable').click(function(){
+        drawTable(aoColumns);
     });
 
     var keywordsHTML = '';
@@ -39,7 +33,7 @@ $(function(){
 
     var customHTML = '';
     $.each(keyword,function(i,e){
-        customHTML += '<li data-id="' + i + '">'+ e +'<span>已添加</span></li>';
+        customHTML += '<li data-id="' + i + '" data-visiable="true">'+ e +'<span>已添加</span></li>';
     });
     $('#customCol').html(customHTML);
     $('#customCol li').click(function(){
@@ -47,21 +41,29 @@ $(function(){
         var keywordId = $(this).data('id');
         if(span === '隐藏'){
             $(this).children().text('已添加');
-            myTable.fnSetColumnVis(keywordId, true);
-            myTable.fnAdjustColumnSizing();
+            $(this).removeClass('hideMe');
         }
         if(span === '已添加'){
             $(this).children().text('隐藏');
-            myTable.fnSetColumnVis(keywordId, false);
-            myTable.fnAdjustColumnSizing();
+            $(this).addClass('hideMe');
         }
     });
 
     $('#resort').click(function(){
         var order = [];
         $('#customCol li').each(function(){
-            order.push($(this).data('id'));
+            if(!$(this).hasClass('hideMe')){
+                order.push($(this).data('id'));
+            }
         });
+        var _aoColumns = [];
+        $.each(order, function(i, e){
+            _aoColumns[i] = {"sTitle": keyword[e]};
+        });
+        myTable.fnDestroy();
+        $('#data').empty();
+        drawTable(_aoColumns);
+        $('#custom').bPopup().close();
     });
 
     $('#customCol').sortable();
