@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>OnTable</title>
+    <link rel="stylesheet" type="text/css" href="default.css" />
+    <style type="text/css">
+        @import "/css/demo_page.css";
+        @import "/css/demo_table.css";
+        .popup_background {
+            z-index: 2000; /* any number */
+        }
+        .popup_wrapper {
+            z-index: 2001; /* any number + 1 */
+        }
+        #customCol {
+            float: right;
+            margin-top: -80px;
+            width: 200px;
+            overflow: hidden;
+            list-style: none;
+        }
+        #customCol li {
+            cursor: pointer;
+        }
+        #customCol li:hover {
+            background-color: #EFE;
+            cursor: pointer;
+        }
+        #customCol span {
+            float: right;
+            color: #999;
+            font-size: 12px;
+        }
+        body.dragging, body.dragging * {
+          cursor: move !important;
+        }
+        .dragged {
+          position: absolute;
+          opacity: 0.5;
+          z-index: 2000;
+        }
+        ul#customCol li.placeholder {
+          position: relative;
+          /** More li styles **/
+        }
+        ul#customCol li.placeholder:before {
+          position: absolute;
+          /** Define arrowhead **/
+        }
+    </style>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="jquery.csv-0.71.min.js"></script>
+    <script src="jquery.dataTables.min.js"></script>
+    <script src="jquery.bpopup.js"></script>
+    <script src="jquery.sortable.js"></script>
+</head>
+
+<body>
+    <h1>CSV to JSON</h1>
+    <h2>CSV</h2>
+    <textarea id="csv" style="display:block; margin-bottom:20px; width:800px; height:200px;">
+"日期","展示数","点击数","花费","CPC","点击率","排名","转化数","CPA","转化率","收入"
+"2013-07-27","139401","5331","10292","1.93","3.82%","1.7","0","0.00","0.00","0.00"
+"2013-07-28","145859","5010","9961","1.99","3.43%","1.8","0","0.00","0.00","0.00"
+"2013-07-29","166374","6283","12127","1.93","3.78%","1.7","0","0.00","0.00","0.00"
+"2013-07-30","161447","6393","12715","1.99","3.96%","1.7","0","0.00","0.00","0.00"
+"2013-07-31","156064","6364","12858","2.02","4.08%","1.7","0","0.00","0.00","0.00"
+"2013-08-01","147247","5801","12472","2.15","3.94%","1.6","0","0.00","0.00","0.00"
+"2013-08-02","144157","5806","12406","2.14","4.03%","1.6","0","0.00","0.00","0.00"
+"2013-08-03","130815","4921","10555","2.14","3.76%","1.7","0","0.00","0.00","0.00"
+"2013-08-04","141267","5097","10816","2.12","3.61%","1.7","0","0.00","0.00","0.00"
+"2013-08-05","150939","5667","12029","2.12","3.75%","1.7","0","0.00","0.00","0.00"
+"2013-08-06","145001","5584","12022","2.15","3.85%","1.7","0","0.00","0.00","0.00"
+"2013-08-07","110796","4682","10015","2.14","4.23%","1.7","0","0.00","0.00","0.00"
+"2013-08-08","124214","4671","10014","2.14","3.76%","1.7","0","0.00","0.00","0.00"
+"2013-08-09","123377","4746","10017","2.11","3.85%","1.7","0","0.00","0.00","0.00"
+"2013-08-10","130494","4643","10032","2.16","3.56%","1.6","0","0.00","0.00","0.00"
+"2013-08-11","137811","4644","10025","2.16","3.37%","1.6","0","0.00","0.00","0.00"
+"2013-08-12","116891","4414","10026","2.27","3.78%","1.6","0","0.00","0.00","0.00"
+"2013-08-13","121939","4490","10023","2.23","3.68%","1.6","0","0.00","0.00","0.00"
+"2013-08-14","119210","4467","10035","2.25","3.75%","1.6","0","0.00","0.00","0.00"
+"2013-08-15","113072","4563","10021","2.20","4.04%","1.6","0","0.00","0.00","0.00"
+"2013-08-16","115657","4620","10038","2.17","3.99%","1.6","0","0.00","0.00","0.00"
+"2013-08-17","127021","4826","10028","2.08","3.80%","1.6","0","0.00","0.00","0.00"
+"2013-08-18","132619","4775","10025","2.10","3.60%","1.7","0","0.00","0.00","0.00"
+"2013-08-19","118809","4510","10042","2.23","3.80%","1.6","0","0.00","0.00","0.00"
+"2013-08-20","113303","4531","10014","2.21","4.00%","1.6","0","0.00","0.00","0.00"
+"2013-08-21","113026","4491","10027","2.23","3.97%","1.5","0","0.00","0.00","0.00"
+"2013-08-22","112839","4465","10041","2.25","3.96%","1.6","0","0.00","0.00","0.00"
+"2013-08-23","114599","4483","10024","2.24","3.91%","1.5","0","0.00","0.00","0.00"
+"2013-08-24","122376","4679","10010","2.14","3.82%","1.6","0","0.00","0.00","0.00"
+"2013-08-25","128554","4780","10012","2.09","3.72%","1.6","0","0.00","0.00","0.00"
+    </textarea>
+
+    <button id="fliter_open">表格过滤器</button>
+    <div id="fliter" style="display:none;width:400px;height:300px;background:#FFF;border-radius:10px;box-shadow: 0 0 25px 5px #999;color:#111;padding:25px;">
+        <h2>过滤器</h2>
+        <p>符合:
+            <select>
+                <option value="all">所有规则</option>
+            </select>
+        </p>
+        <form>
+            <h3>过滤条件1</h3>
+            <p>
+                <label>选择过滤的列：</label>
+                <select id="keywords" name="keyword">
+                    <option value="1">1</option>
+                </select>
+            </p>
+            <p>
+                <label>选择条件：</label>
+                <select name = "rull">
+                    <option value="equal">等于</option>
+                    <option value="gt">大于</option>
+                    <option value="lt">小于</option>
+                    <option value="gte">大于或等于</option>
+                    <option value="lte">小于或等于</option>
+                    <option value="null">为空</option>
+                </select>
+            </p>
+            <p>
+                <label>值：</label>
+                <input type="text"></input>
+            </p>
+        </form>
+        <button>过滤</button>
+        <button class="b-close">取消</button>
+    </div>
+
+    <button id="custom_open">自定义列</button>
+    <div id="custom" style="display:none;width:400px;height:300px;background:#FFF;border-radius:10px;box-shadow: 0 0 25px 5px #999;color:#111;padding:25px;">
+        <h2>自定义列</h2>
+        <p>拖放可以重新排序</p>
+        <ul id="customCol">
+        </ul>
+        <button id="resort">确定</button>
+        <button class="b-close">取消</button>
+    </div>
+
+    <div style="margin: 20px 0;width:800px">
+        <table id="data"></table>
+    </div>
+    <script type="text/javascript">
+$(function(){
+    var csv = $('#csv').text();
+    var json = $.csv.toArrays(csv);
+    var keyword = json.slice(0,1);
+    keyword = keyword[0];
+    var data = json.slice(1);
+    var aoColumns = [
+        { "sTitle": keyword[0]},
+        { "sTitle": keyword[1]},
+        { "sTitle": keyword[2]},
+        { "sTitle": keyword[3]},
+        { "sTitle": keyword[4]},
+        { "sTitle": keyword[5]},
+        { "sTitle": keyword[6]},
+        { "sTitle": keyword[7]},
+        { "sTitle": keyword[8]},
+        { "sTitle": keyword[9]},
+        { "sTitle": keyword[10]}
+    ];
+    var myTable = $('#data').dataTable({
+        "bDestroy": true,
+        "bRetrieve": true,
+        "aaData": data,
+        "aoColumns": aoColumns
+    });
+
+    var keywordsHTML = '';
+    $.each(keyword,function(i,e){
+        keywordsHTML += '<option value="' + i +'">'+ e +'</option>';
+    });
+    $('#keywords').html(keywordsHTML);
+
+    var customHTML = '';
+    $.each(keyword,function(i,e){
+        customHTML += '<li data-id="' + i + '">'+ e +'<span>已添加</span></li>';
+    });
+    $('#customCol').html(customHTML);
+    $('#customCol li').click(function(){
+        var span = $(this).children().text();
+        var keywordId = $(this).data('id');
+        if(span === '隐藏'){
+            $(this).children().text('已添加');
+            myTable.fnSetColumnVis(keywordId, true);
+            myTable.fnAdjustColumnSizing();
+        }
+        if(span === '已添加'){
+            $(this).children().text('隐藏');
+            myTable.fnSetColumnVis(keywordId, false);
+            myTable.fnAdjustColumnSizing();
+        }
+    });
+
+    $('#resort').click(function(){
+        var order = [];
+        $('#customCol li').each(function(){
+            order.push($(this).data('id'));
+        });
+        console.log(order);
+    });
+
+    $('#customCol').sortable();
+    $('#fliter_open').on('click', function(e) {
+        e.preventDefault();
+        $('#fliter').bPopup();
+    });
+    $('#custom_open').on('click', function(e) {
+        e.preventDefault();
+        $('#custom').bPopup();
+    });
+});
+    </script>
+</body>
+</html>
